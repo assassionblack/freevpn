@@ -1,0 +1,6 @@
+setuptools~=57.0.0
+wget~=3.2
+bs4~=0.0.1
+beautifulsoup4~=4.11.1
+requests~=2.27.1
+html5lib~=1.1
