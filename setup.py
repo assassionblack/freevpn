@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as file:
 setup(
   name='freevpn',
   packages=['freevpn'],
-  version='1.0',
+  version='1.1',
   python_requires='>=3.6',
   license='GPLv3',
   description='download free configuration for openvpn from freevpn.me',
@@ -18,7 +18,7 @@ setup(
   author='assassion',
   author_email='assassionblack666@gmail.com',
   keywords=['freevpn', 'openvpn configuration', 'openvpn free'],
-  install_requires=['wget', 'bs4', 'beautifulsoup4', 'requests'],
+  install_requires=['bs4', 'beautifulsoup4', 'requests'],
   classifiers=[
     'Development Status :: 1 - Testing',
     'Topic :: openvpn :: configuration',

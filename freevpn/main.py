@@ -1,11 +1,7 @@
 """
 script for download configuration files for openvpn from https://freevpn.me
-
-for download configuration (login, password, ovpn-files, cert-files, key-file):
-    run freevpn with argument -p or -pc
 :argument:
-    -p - for parse site and write username and password into ~/freeVPN/freevpn.txt
-    -p -c - for download configuration files into ~/freeVPN/
+    -p - for parse site, write username and password and download config files
 """
 import os.path
 import sys
@@ -31,23 +27,41 @@ def parse():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        import main
-
-        doc = main.__doc__
-        print(doc)
-    elif "-p" in sys.argv:
+    print("script for download configuration files for openvpn from https://freevpn.me")
+    if "-p" in sys.argv:
         username, password, link = parse()
         if not os.path.exists(f"/home/{os.getlogin()}/freeVPN/"):
             os.mkdir(f"/home/{os.getlogin()}/freeVPN")
             print("directory ~/freeVPN created")
         with open(f"/home/{os.getlogin()}/freeVPN/freevpn.txt", mode="w", encoding="utf-8") as conf:
-            conf.write(f"username: {username}\npassword: {password}")
+            conf.write(f"{username}\n{password}")
             print("username and password written")
-        if "-c" in sys.argv:
-            with open("freevpn.zip", "wb") as zip_f:
-                zip_f.write(requests.get(link).content)
-            zip_file = zipfile.ZipFile("freevpn.zip")
-            zip_file.extractall(f"/home/{os.getlogin()}/freeVPN/")
-            os.remove("freevpn.zip")
-            print("openvpn configurations written")
+        with open("freevpn.zip", "wb") as zip_f:
+            zip_f.write(requests.get(link).content)
+        zip_file = zipfile.ZipFile("freevpn.zip")
+        zip_file.extractall(f"/home/{os.getlogin()}/freeVPN/")
+        os.remove("freevpn.zip")
+        print("openvpn configurations written")
+
+        print("commands for run openvpn:")
+        dir0 = f"/home/{os.getlogin()}/freeVPN"
+        dir1 = os.listdir(f"/home/{os.getlogin()}/freeVPN")[2]
+        dir0 = f"{dir0}/{dir1}"
+        dir1 = os.listdir(dir0)[0]
+        dir0 = f"{dir0}/{dir1}"
+        dir1 = os.listdir(f'{dir0}')
+        servers = []
+        for server in dir1:
+            if server.startswith("Server"):
+                servers.append(f"{dir0}/{server}")
+        with open(f"/home/{os.getlogin()}/freeVPN/commands.txt", mode="w", encoding="utf-8") as comm:
+            for server in servers:
+                command = f"sudo openvpn --config '{server}' " \
+                          f"--auth-user-pass /home/{os.getlogin()}/freeVPN/freevpn.txt " \
+                          f"--auth-nocache"
+                comm.write(f"{command}\n")
+                print(f"\t{command}")
+        print("commands for running openvpn written in freeVPN/commands.txt")
+    else:
+        print("for download configuration (login, password, ovpn-files, cert-files, key-file):\n"
+              "\trun freevpn with argument -p")
